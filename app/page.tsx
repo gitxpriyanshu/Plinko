@@ -14,7 +14,7 @@ export default function PlinkoGame() {
   const [dropColumn, setDropColumn] = useState<number>(6);
   const [betCents, setBetCents] = useState<number>(100);
 
-  const [status, setStatus] = useState<'IDLE' | 'STARTED' | 'ANIMATING' | 'REVEALED'>('IDLE');
+  const [status, setStatus] = useState<'IDLE' | 'STARTED' | 'ANIMATING' | 'REVEALED'>('STARTED');
   const [payoutMultiplier, setPayoutMultiplier] = useState<number | null>(null);
   const [pegMap, setPegMap] = useState<number[][] | null>(null);
 
@@ -46,7 +46,7 @@ export default function PlinkoGame() {
 
   const commitRound = useCallback(async () => {
     try {
-      setStatus('IDLE');
+      // Don't set IDLE here, keep it in a 'waiting' state
       setCombinedSeed(null);
       setPayoutMultiplier(null);
       setPegMap(null);
@@ -56,9 +56,10 @@ export default function PlinkoGame() {
       if (data.roundId) {
         setRoundId(data.roundId);
         setCommitHex(data.commitHex);
+        setStatus('IDLE'); // Now it's safe to play
       }
     } catch {
-      // Error
+      setStatus('IDLE'); // Fallback to avoid permalock
     }
   }, []);
 
@@ -263,10 +264,10 @@ export default function PlinkoGame() {
 
         <button
           onClick={handleDrop}
-          disabled={status !== 'IDLE'}
+          disabled={status !== 'IDLE' || !roundId}
           className="w-full py-4 mt-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl shadow-[0_0_20px_rgba(139,92,246,0.3)] transform transition-transform active:scale-95 disabled:opacity-50 disabled:active:scale-100 disabled:pointer-events-none disabled:shadow-none"
         >
-          Drop Ball (Space)
+          {!roundId ? 'Syncing Round...' : 'Drop Ball (Space)'}
         </button>
 
         <div className="pt-6 mt-auto border-t border-white/10">

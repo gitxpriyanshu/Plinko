@@ -87,7 +87,11 @@ const PlinkoBoard = forwardRef<PlinkoBoardRef, Props>(({
       }
     };
     window.addEventListener('click', initAudio, { once: true });
-    return () => window.removeEventListener('click', initAudio);
+    window.addEventListener('keydown', initAudio, { once: true });
+    return () => {
+      window.removeEventListener('click', initAudio);
+      window.removeEventListener('keydown', initAudio);
+    };
   }, []);
 
   const playClick = useCallback(() => {
