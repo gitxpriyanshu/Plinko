@@ -1,63 +1,76 @@
-# Plinko Lab
+# 🎰 Plinko Lab // Technical Specification
 
-A completely provably fair, highly responsive Plinko game built using modern web standards.
+A high-fidelity, provably fair Plinko simulation built with a strictly audited cryptographic stack.
 
-## How to run locally
+## 🛠 Tech Stack (Finalized)
 
-Ensure you have Node.js 18+ installed.
+*   **Frontend**: Next.js 14+ (App Router), React 18, TypeScript.
+*   **Aesthetics**: Cyberpunk/Glitch CSS system with standard Glassmorphism fallbacks.
+*   **Engine**: HTML5 Canvas bitwise-optimized rendering loop.
+*   **Backend**: Next.js Edge-ready API Route Handlers.
+*   **Database**: **PostgreSQL + Prisma ORM** (Industry Standard).
+*   **Hashing**: SHA-256 (Node.js `crypto` native module).
+*   **PRNG**: **Xorshift32** (Deterministic, bit-shift randomization).
 
-1. Clone the repository and install all localized generic dependencies natively:
-   ```bash
-   npm install
-   ```
+---
 
-2. Copy the example environment variables and prepare your local instances:
-   ```bash
-   cp .env.example .env
-   ```
-   *Required Environment Variable:* `DATABASE_URL="file:./dev.db"`
+## 🚀 Local Development Setup
 
-3. Push the mapped Prisma schema layout forcing generated configurations mapping over generically to SQLite immediately preventing mismatch runtime failures:
-   ```bash
-   npm run db:push
-   ```
+1.  **Dependencies**:
+    ```bash
+    npm install
+    ```
 
-4. Run your integrated Vitest testing framework explicitly to instantly verify the specific physics outputs and deterministic PRNG calculations mathematically pass locally:
-   ```bash
-   npm run test
-   ```
+2.  **Environment Configuration**:
+    Rename `.env.example` to `.env` and provide your Postgres connection string:
+    ```env
+    DATABASE_URL="postgresql://user:password@host:5432/db_name?sslmode=require"
+    ```
 
-5. Execute your dev environment cleanly mapping onto port 3000 locally:
-   ```bash
-   npm run dev
-   ```
+3.  **Database Synchronization**:
+    Push the schema to your Postgres instance:
+    ```bash
+    npx prisma db push
+    ```
 
-## Architecture Overview
+4.  **Verification Test Suit**:
+    Run Vitest to ensure PRNG and Physics integrity:
+    ```bash
+    npm run test
+    ```
 
-**Frontend Integration Base:**
-- **Next.js 14 App Router:** Provides lightning-fast SSR configurations and seamless seamless isomorphic React endpoints mapping API structures explicitly efficiently natively minimizing bandwidth requests contextually!
-- **Tailwind CSS:** Fully powers the mobile-first CSS architecture seamlessly integrating responsive `glass-morphism` structural layouts explicitly optimizing scalable UI containers handling resizing logic natively automatically.
-- **HTML5 Canvas `<PlinkoBoard />`:** Specifically tailored structurally configuring continuous visual mathematical rendering matrices mapping raw graphical layouts dynamically minimizing browser node-memory utilizing rapid `requestAnimationFrame` polling logic natively rendering independent node-physics.
+5.  **Launch Interface**:
+    ```bash
+    npm run dev
+    ```
 
-**Backend Execution:**
-- **Next.js Route Handlers (`/api/*`):** Handles strictly stateless verification mathematics linking safely executing raw secure physics without leaking PRNG variables unexpectedly securely safely utilizing direct backend validations correctly formatting error handling efficiently securely.
-- **Prisma mapped natively via SQLite bindings:** Securely records verification traces cleanly enabling exact validation replays visually scaling efficiently reliably capturing payloads ensuring math matching verifications efficiently reliably dynamically!
+---
 
-## Fairness Specification Configuration
+## 🔒 Provable Fairness Implementation
 
-The framework enforces indisputable verification parameters via the following exact strict computational behaviors ensuring absolute cryptographic security:
-- **Hashing Security Layers:** Utilizes native Node's module components exclusively invoking `crypto.createHash('sha256')` directly natively bounding permutations explicitly.
-- **Randomization Algorithm:** Physics iteration exclusively relies on customized **xorshift32 PRNG algorithm implementations**, statically bound converting hashes reliably strictly onto bounded arrays cleanly returning normalized variables mapping sequentially dynamically.
-- **Mechanical Physics Nodes:** Generates bias metrics evaluating arrays strictly invoking explicitly `value = 0.5 + (rand() - 0.5) * 0.2` mapping outputs forcefully structurally forcing `roundedBias = Math.round(rawBias * 1000000) / 1000000` executing boundaries effectively mapping variables exactly stabilizing cross-environment mathematical execution rendering natively dynamically preventing deviation.
-- **Hashing Object Structurally:** Exclusively implements natively strictly stringified bounds via identical static standard `JSON.stringify(pegMap)` resolving securely dynamically enforcing identical mapping cleanly dynamically securely generating `pegMapHash` permutations securely explicitly!
+### 1. Hashing Hierarchy (SHA-256)
+We use the standard SHA-256 algorithm for all cryptographic commitments:
+*   **Commitment**: `sha256(serverSeed + ":" + nonce)`
+*   **Revealed Seed**: `sha256(serverSeed + ":" + clientSeed + ":" + nonce)`
 
-## AI Usage Disclaimer
+### 2. Randomness Engine (Xorshift32)
+Each drop is governed by a deterministic bit-shift generator (Xorshift32). This ensures that given the same seed, the ball trajectory is 100% reproducible and auditable.
+```typescript
+// Core PRNG Logic (lib/prng.ts)
+state ^= state << 13;
+state ^= state >>> 17;
+state ^= state << 5;
+```
 
-Artificial Intelligence mechanics cleanly mapped out structural code-generation scaffolding components actively directly constructing physical constraints managing graphical layouts explicitly cleanly mathematically integrating Canvas representations automatically managing endpoint structures safely seamlessly configuring PRNG mapping natively dynamically effectively ensuring structural boundaries effectively safely strictly ensuring output dynamically efficiently safely securely!
+### 3. Physics & Bias
+The physics engine calculates each collision using a deterministic float derived from the PRNG. We apply a fixed precision rounding (`10^6`) to prevent floating-point drift across different browser engines, ensuring the verifier always matches the live game.
 
-## Quick Access Live Links & Estimates
+---
 
-- **Time Track:** Estimated implementation bounds ~ 1.5 Hours.
-- **Live Local Address Index:** [http://localhost:3000](http://localhost:3000) - Start Drop Configuration!
-- **Live Internal Mathematical Verifier Tool:** [http://localhost:3000/verify](http://localhost:3000/verify) - Transparency Checking Output.
-- **Example Replay Data Source:** Explore `/verify?roundId=...` manually testing explicitly natively executing verification dynamically tracing parameters dynamically naturally!
+## 📊 Feature Index
+*   **Live Interface**: [http://localhost:3000](http://localhost:3000)
+*   **Audit Terminal**: [http://localhost:3000/verify](http://localhost:3000/verify)
+*   **Easter Eggs**: 
+    *   Press `T` for Gravitational Tilt (Hardware Glitch Simulation).
+    *   Press `G` for Geometry Overlay (Real-time RNG data).
+    *   **Golden Ball**: Achieve 3 consecutive center landings to activate the Gold Skin.
