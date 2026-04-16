@@ -8,8 +8,6 @@ import SessionLog from '@/components/SessionLog';
 export default function PlinkoGame() {
   const [roundId, setRoundId] = useState<string | null>(null);
   const [commitHex, setCommitHex] = useState<string>('');
-  const [nonce, setNonce] = useState<string>('');
-  const [serverSeed, setServerSeed] = useState<string | null>(null);
   const [combinedSeed, setCombinedSeed] = useState<string | null>(null);
 
   const [clientSeed, setClientSeed] = useState<string>('');
@@ -49,7 +47,6 @@ export default function PlinkoGame() {
   const commitRound = useCallback(async () => {
     try {
       setStatus('IDLE');
-      setServerSeed(null);
       setCombinedSeed(null);
       setPayoutMultiplier(null);
       setPegMap(null);
@@ -59,10 +56,9 @@ export default function PlinkoGame() {
       if (data.roundId) {
         setRoundId(data.roundId);
         setCommitHex(data.commitHex);
-        setNonce(''); // Hid securely prior to actual deployment
       }
-    } catch (e) {
-      console.error(e);
+    } catch {
+      // Error
     }
   }, []);
 
@@ -70,33 +66,11 @@ export default function PlinkoGame() {
     commitRound();
   }, [commitRound]);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (document.activeElement?.tagName === 'INPUT') return;
-
-      if (e.key === 'ArrowLeft') {
-        setDropColumn(prev => Math.max(0, prev - 1));
-      } else if (e.key === 'ArrowRight') {
-        setDropColumn(prev => Math.min(12, prev + 1));
-      } else if (e.key === ' ' || e.key === 'Spacebar') {
-        e.preventDefault();
-        handleDrop();
-      } else if (e.key.toLowerCase() === 't') {
-        setTilt(prev => !prev);
-      } else if (e.key.toLowerCase() === 'g') {
-        setShowRng(prev => !prev);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [status, roundId, clientSeed, betCents, dropColumn]);
-
-  const handleDrop = async () => {
+  const handleDrop = useCallback(async () => {
     if (status !== 'IDLE' || !roundId || isRequesting.current) return;
     isRequesting.current = true;
     setStatus('STARTED');
     setPayoutMultiplier(null);
-    setServerSeed(null);
     setCombinedSeed(null);
     try {
       const res = await fetch(`/api/rounds/${roundId}/start`, {
@@ -117,24 +91,23 @@ export default function PlinkoGame() {
       setStatus('ANIMATING');
       boardRef.current?.triggerDrop(data.path, data.binIndex);
       isRequesting.current = false;
-    } catch (e) {
-      console.error(e);
+    } catch {
       setStatus('IDLE');
       isRequesting.current = false;
     }
-  };
+  }, [status, roundId, clientSeed, betCents, dropColumn]);
 
-  const handleAnimationEnd = async (binIndex: number) => {
+  const handleAnimationEnd = useCallback(async () => {
     if (!roundId) return;
     try {
       const res = await fetch(`/api/rounds/${roundId}/reveal`, { method: 'POST' });
-      const data = await res.json();
-      setServerSeed(data.serverSeed);
-      setNonce(data.nonce); // Retrieve nonce post-round strictly securely!
-
+      await res.json();
+      setCombinedSeed(null); // Explicit reset
+      setStatus('REVEALED');
+      
       // Reload fresh properties tracking DB constraints
       const roundRes = await fetch(`/api/rounds/${roundId}`);
-      const roundData = await roundRes.json();
+      const roundData: { combinedSeed: string, payoutMultiplier: number } = await roundRes.json();
 
       setCombinedSeed(roundData.combinedSeed);
       setPayoutMultiplier(roundData.payoutMultiplier);
@@ -143,10 +116,31 @@ export default function PlinkoGame() {
       setTimeout(() => {
         commitRound();
       }, 2000);
-    } catch (e) {
-      console.error(e);
+    } catch {
+      // Final reveal catch
     }
-  };
+  }, [roundId, commitRound]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (document.activeElement?.tagName === 'INPUT') return;
+
+      if (e.key === 'ArrowLeft') {
+        setDropColumn(prev => Math.max(0, prev - 1));
+      } else if (e.key === 'ArrowRight') {
+        setDropColumn(prev => Math.min(12, prev + 1));
+      } else if (e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        handleDrop();
+      } else if (e.key.toLowerCase() === 't') {
+        setTilt(prev => !prev);
+      } else if (e.key.toLowerCase() === 'g') {
+        setShowRng(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleDrop]);
 
   return (
     <div className={`min-h-screen p-4 flex flex-col md:flex-row gap-8 ${tilt ? 'tilt' : ''}`}>

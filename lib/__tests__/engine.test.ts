@@ -1,7 +1,7 @@
 import { expect, test, describe } from 'vitest';
 import { makeCommit, makeCombinedSeed, sha256 } from '../crypto';
 import { makeXorshift32, seedFromHex } from '../prng';
-import { generatePegMap, simulateDrop, PAYTABLE } from '../engine';
+import { generatePegMap, simulateDrop } from '../engine';
 
 describe('Plinko Engine specifications', () => {
   const serverSeed = "b2a5f3f32a4d9c6ee7a8c1d33456677890abcdeffedcba0987654321ffeeddcc";

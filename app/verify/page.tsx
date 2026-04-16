@@ -14,7 +14,7 @@ function VerifyForm() {
    const [dropColumn, setDropColumn] = useState(searchParams.get('dropColumn') || '6');
    const [roundId, setRoundId] = useState(searchParams.get('roundId') || '');
 
-   const [results, setResults] = useState<any>(null);
+   const [results, setResults] = useState<Record<string, any> | null>(null);
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState('');
    const [copied, setCopied] = useState(false);
@@ -68,8 +68,8 @@ function VerifyForm() {
                      boardRef.current?.triggerDrop([], data.binIndex);
                   }, 50);
                }
-            } catch (err) {
-               console.error("Failed to fetch round path", err);
+            } catch {
+               console.error("Failed to fetch round path");
                setTimeout(() => {
                   boardRef.current?.triggerDrop([], data.binIndex);
                }, 50);
@@ -80,7 +80,7 @@ function VerifyForm() {
             }, 50);
          }
 
-      } catch (err) {
+      } catch {
          setError('Network error during verification.');
       }
       setLoading(false);

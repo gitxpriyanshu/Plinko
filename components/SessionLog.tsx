@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 export default function SessionLog() {
-  const [rounds, setRounds] = useState<any[]>([]);
+  const [rounds, setRounds] = useState<Record<string, any>[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -13,8 +13,8 @@ export default function SessionLog() {
         const res = await fetch('/api/rounds?limit=20');
         const data = await res.json();
         if (Array.isArray(data)) setRounds(data);
-      } catch (e) {
-        console.error("Failed to fetch recent rounds", e);
+      } catch {
+        console.error("Failed to fetch recent rounds");
       }
     };
 

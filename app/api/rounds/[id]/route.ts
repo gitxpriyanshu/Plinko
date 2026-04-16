@@ -13,15 +13,12 @@ export async function GET(
             return NextResponse.json({ error: 'Round not found' }, { status: 404 });
         }
 
-        const roundData = { ...round } as any;
+        const safeRound = { 
+            ...round,
+            ...(round.status !== 'REVEALED' ? { serverSeed: null, nonce: null } : {})
+        };
         
-        // Hide serverSeed and nonce if the round hasn't explicitly been revealed
-        if (roundData.status !== 'REVEALED') {
-            delete roundData.serverSeed;
-            delete roundData.nonce;
-        }
-
-        return NextResponse.json(roundData);
+        return NextResponse.json(safeRound);
     } catch (error) {
         console.error("Error retrieving round data:", error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

@@ -80,7 +80,7 @@ const PlinkoBoard = forwardRef<PlinkoBoardRef, Props>(({
   useEffect(() => {
     const initAudio = () => {
       if (!audioCtxRef.current) {
-        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
         if (AudioContextClass) {
           audioCtxRef.current = new AudioContextClass();
         }
@@ -105,7 +105,7 @@ const PlinkoBoard = forwardRef<PlinkoBoardRef, Props>(({
       gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
       osc.start();
       osc.stop(ctx.currentTime + 0.05);
-    } catch (e) { }
+    } catch { }
   };
 
   const playChord = () => {
@@ -125,7 +125,7 @@ const PlinkoBoard = forwardRef<PlinkoBoardRef, Props>(({
         osc.start();
         osc.stop(ctx.currentTime + 0.5);
       });
-    } catch (e) { }
+    } catch { }
   };
 
   useImperativeHandle(ref, () => ({
@@ -304,7 +304,7 @@ const PlinkoBoard = forwardRef<PlinkoBoardRef, Props>(({
 
     frameId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(frameId);
-  }, [dropColumn, onAnimationEnd, pegMap]);
+  }, [dropColumn, onAnimationEnd, pegMap, playChord, playClick, showRng, muted]);
 
   return (
     <div className="w-full flex justify-center items-center overflow-hidden">
