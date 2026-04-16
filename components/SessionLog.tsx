@@ -3,8 +3,16 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
+interface RoundLog {
+  id: string;
+  createdAt: string;
+  binIndex: number;
+  payoutMultiplier: number;
+  betCents: number;
+}
+
 export default function SessionLog() {
-  const [rounds, setRounds] = useState<Record<string, any>[]>([]);
+  const [rounds, setRounds] = useState<RoundLog[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {

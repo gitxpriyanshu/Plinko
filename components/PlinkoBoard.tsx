@@ -1,6 +1,6 @@
 'use client';
 
-import React, { forwardRef, useImperativeHandle, useRef, useEffect } from 'react';
+import React, { forwardRef, useImperativeHandle, useRef, useEffect, useCallback } from 'react';
 import { PAYTABLE } from '@/lib/engine';
 
 export interface PlinkoBoardRef {
@@ -90,7 +90,7 @@ const PlinkoBoard = forwardRef<PlinkoBoardRef, Props>(({
     return () => window.removeEventListener('click', initAudio);
   }, []);
 
-  const playClick = () => {
+  const playClick = useCallback(() => {
     if (muted || !audioCtxRef.current) return;
     try {
       const ctx = audioCtxRef.current;
@@ -106,9 +106,9 @@ const PlinkoBoard = forwardRef<PlinkoBoardRef, Props>(({
       osc.start();
       osc.stop(ctx.currentTime + 0.05);
     } catch { }
-  };
+  }, [muted]);
 
-  const playChord = () => {
+  const playChord = useCallback(() => {
     if (muted || !audioCtxRef.current) return;
     try {
       const ctx = audioCtxRef.current;
@@ -126,7 +126,7 @@ const PlinkoBoard = forwardRef<PlinkoBoardRef, Props>(({
         osc.stop(ctx.currentTime + 0.5);
       });
     } catch { }
-  };
+  }, [muted]);
 
   useImperativeHandle(ref, () => ({
     triggerDrop: (path: ('L' | 'R')[], binIndex: number) => {

@@ -25,7 +25,7 @@ export async function POST(
             serverSeed: updatedRound.serverSeed,
             nonce: updatedRound.nonce
         });
-    } catch (error) {
+    } catch (error: unknown) {
         console.error("Error revealing game round:", error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }

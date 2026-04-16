@@ -63,7 +63,7 @@ export async function GET(request: Request) {
             binIndex,
             match
         });
-    } catch (error) {
+    } catch (error: unknown) {
         console.error("Error verifying game round:", error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }

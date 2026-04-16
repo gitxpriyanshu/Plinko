@@ -22,7 +22,7 @@ export async function POST() {
             roundId: round.id,
             commitHex: round.commitHex
         });
-    } catch (error) {
+    } catch (error: unknown) {
         console.error("Error creating round commit:", error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }

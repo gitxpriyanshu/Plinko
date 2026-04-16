@@ -29,7 +29,7 @@ export async function GET(request: Request) {
         });
 
         return NextResponse.json(rounds);
-    } catch (error) {
+    } catch (error: unknown) {
         console.error("Error retrieving historical rounds:", error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }

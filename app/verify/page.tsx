@@ -5,6 +5,14 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import PlinkoBoard, { PlinkoBoardRef } from '@/components/PlinkoBoard';
 
+interface VerifyResult {
+   commitHex: string;
+   combinedSeed: string;
+   pegMapHash: string;
+   binIndex: number;
+   match?: boolean;
+}
+
 function VerifyForm() {
    const searchParams = useSearchParams();
 
@@ -14,7 +22,7 @@ function VerifyForm() {
    const [dropColumn, setDropColumn] = useState(searchParams.get('dropColumn') || '6');
    const [roundId, setRoundId] = useState(searchParams.get('roundId') || '');
 
-   const [results, setResults] = useState<Record<string, any> | null>(null);
+   const [results, setResults] = useState<VerifyResult | null>(null);
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState('');
    const [copied, setCopied] = useState(false);

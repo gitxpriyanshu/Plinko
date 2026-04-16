@@ -68,8 +68,8 @@ export async function POST(
             path,
             payoutMultiplier
         });
-    } catch (error) {
-        console.error("Error starting game round:", error);
+    } catch (error: unknown) {
+        console.error("Error verifying game round:", error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
