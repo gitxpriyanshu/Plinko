@@ -24,5 +24,6 @@ model Round {
   payoutMultiplier Float     @default(0)
   betCents         Int       @default(0)
   pathJson         Json      @default("[]")
+  pathString       String    @default("")
   revealedAt       DateTime?
 }
