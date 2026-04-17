@@ -299,7 +299,7 @@ function VerifyForm() {
                            <div className="text-sm font-bold text-gray-200">Commit Hex Validation</div>
                            <div className="text-[10px] text-gray-400">Prove that the server committed to a secret seed before the round started by comparing its hash.</div>
                            <div className="p-3 bg-black/40 rounded-lg border border-white/5 font-mono text-[10px] break-all overflow-hidden text-primary/80">
-                               SHA256("{serverSeed}:{nonce}")<br/>
+                               {`SHA256("${serverSeed}:${nonce}")`}<br/>
                                <span className="text-gray-300 mt-1 block">→ {results.commitHex}</span>
                            </div>
                         </div>
@@ -311,7 +311,7 @@ function VerifyForm() {
                            <div className="text-sm font-bold text-gray-200">Master Seed Generation</div>
                            <div className="text-[10px] text-gray-400">Combine all seeds securely to build an unpredictable physics starting state.</div>
                            <div className="p-3 bg-black/40 rounded-lg border border-white/5 font-mono text-[10px] break-all overflow-hidden text-primary/80">
-                               SHA256("{serverSeed}:{clientSeed}:{nonce}")<br/>
+                               {`SHA256("${serverSeed}:${clientSeed}:${nonce}")`}<br/>
                                <span className="text-gray-300 mt-1 block">→ {results.combinedSeed}</span>
                            </div>
                         </div>
@@ -323,7 +323,7 @@ function VerifyForm() {
                            <div className="text-sm font-bold text-gray-200">Mathematical Initialization (PRNG)</div>
                            <div className="text-[10px] text-gray-400">Translate the combined hash into a mathematically stable Xorshift32 PRNG state generator.</div>
                            <div className="p-3 bg-black/40 rounded-lg border border-white/5 font-mono text-[10px] break-all overflow-hidden text-primary/80">
-                               makeXorshift32( seedFromHex("{results.combinedSeed.substring(0,8)}...") )
+                               {`makeXorshift32( seedFromHex("${results.combinedSeed?.substring(0,8) || ''}...") )`}
                            </div>
                         </div>
                     </div>
@@ -346,7 +346,7 @@ function VerifyForm() {
                            <div className="text-sm font-bold text-gray-200">Physics Simulation Limits</div>
                            <div className="text-[10px] text-gray-400">Execute deterministic physics drops using the precise map and continuing PRNG sequences.</div>
                            <div className="p-3 bg-black/40 rounded-lg border border-white/5 font-mono text-[10px] break-all overflow-hidden text-primary/80">
-                               simulateDrop( pegMap, rand, {dropColumn}, 12 )<br/>
+                               {`simulateDrop( pegMap, rand, ${dropColumn}, 12 )`}<br/>
                                {results.pathString && <span className="text-gray-300 mt-1 block">→ Path: {results.pathString}</span>}
                                <span className="text-white font-bold block mt-1">→ Bin Index: {results.binIndex}</span>
                            </div>
@@ -454,16 +454,16 @@ function VerifyForm() {
                                  <div className="w-full mt-3 p-3 bg-red-950/30 rounded-lg text-xs font-mono text-left border border-red-500/20">
                                     <ul className="space-y-1">
                                        <li className={results.checks.commitMatch ? "text-green-400" : "text-red-400"}>
-                                          [{results.checks.commitMatch ? "✓" : "✗"}] Commit Hash (S:N)
+                                          {`[${results.checks.commitMatch ? "✓" : "✗"}] Commit Hash (S:N)`}
                                        </li>
                                        <li className={results.checks.combinedSeedMatch ? "text-green-400" : "text-red-400"}>
-                                          [{results.checks.combinedSeedMatch ? "✓" : "✗"}] Combined Seed (S:C:N)
+                                          {`[${results.checks.combinedSeedMatch ? "✓" : "✗"}] Combined Seed (S:C:N)`}
                                        </li>
                                        <li className={results.checks.pegMapMatch ? "text-green-400" : "text-red-400"}>
-                                          [{results.checks.pegMapMatch ? "✓" : "✗"}] Peg Map Uniformity
+                                          {`[${results.checks.pegMapMatch ? "✓" : "✗"}] Peg Map Uniformity`}
                                        </li>
                                        <li className={results.checks.binMatch ? "text-green-400" : "text-red-400"}>
-                                          [{results.checks.binMatch ? "✓" : "✗"}] Final Bin Index
+                                          {`[${results.checks.binMatch ? "✓" : "✗"}] Final Bin Index`}
                                        </li>
                                     </ul>
                                  </div>

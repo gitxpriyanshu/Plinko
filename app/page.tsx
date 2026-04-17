@@ -383,7 +383,7 @@ export default function PlinkoGame() {
                   <div className="hidden md:block relative group">
                     <span className="cursor-help text-primary/60 hover:text-primary text-[10px]">ⓘ</span>
                     <div className="absolute left-0 bottom-full mb-2 w-48 p-2 bg-black/90 border border-white/10 rounded-lg text-[10px] text-gray-400 leading-tight opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl">
-                      Derived from SHA256(serverSeed + ":" + clientSeed + ":" + nonce)
+                      Derived from SHA256(serverSeed + &quot;:&quot; + clientSeed + &quot;:&quot; + nonce)
                     </div>
                   </div>
                 </div>
