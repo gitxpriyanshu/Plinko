@@ -20,7 +20,11 @@ export async function GET(request: Request) {
                 createdAt: true,
                 binIndex: true,
                 payoutMultiplier: true,
-                betCents: true
+                betCents: true,
+                serverSeed: true,
+                clientSeed: true,
+                nonce: true,
+                dropColumn: true
             },
             orderBy: {
                 createdAt: 'desc'

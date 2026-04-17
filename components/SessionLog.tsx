@@ -9,6 +9,10 @@ interface RoundLog {
   binIndex: number;
   payoutMultiplier: number;
   betCents: number;
+  serverSeed: string;
+  clientSeed: string;
+  nonce: string;
+  dropColumn: number;
 }
 
 export default function SessionLog() {
@@ -75,6 +79,7 @@ export default function SessionLog() {
               <tr className="text-gray-500 border-b border-white/10 uppercase text-[10px] tracking-widest bg-black/20">
                 <th className="py-3 px-4 rounded-tl-lg">ID</th>
                 <th className="py-3 px-4">Time</th>
+                <th className="py-3 px-4">Nonce</th>
                 <th className="py-3 px-4">Bin</th>
                 <th className="py-3 px-4">Mult</th>
                 <th className="py-3 px-4">Payout</th>
@@ -86,12 +91,18 @@ export default function SessionLog() {
                 <tr key={r.id} className={`border-b border-white/5 hover:bg-white/5 transition-colors ${i % 2 === 0 ? '' : 'bg-white/[0.02]'}`}>
                   <td className="py-3 px-4 font-mono text-xs opacity-70" title={r.id}>...{r.id.substring(r.id.length - 6)}</td>
                   <td className="py-3 px-4 opacity-80 whitespace-nowrap">{new Date(r.createdAt).toLocaleTimeString()}</td>
+                  <td className="py-3 px-4 font-mono text-xs opacity-80">{r.nonce}</td>
                   <td className="py-3 px-4 font-bold">{r.binIndex}</td>
                   <td className={`py-3 px-4 font-bold ${r.payoutMultiplier >= 1 ? 'text-green-400' : 'text-red-400'}`}>{r.payoutMultiplier}×</td>
                   <td className="py-3 px-4 font-mono opacity-90 text-yellow-500">{(r.betCents * r.payoutMultiplier).toFixed(0)}¢</td>
                   <td className="py-3 px-4 text-right">
-                    <Link href={`/verify?roundId=${r.id}`} target="_blank" className="inline-block px-3 py-1 bg-primary/20 text-primary hover:bg-primary/30 rounded text-xs font-bold transition-colors shadow-sm whitespace-nowrap">
-                      Verify ✓
+                    <Link 
+                      href={`/verify?roundId=${r.id}&serverSeed=${r.serverSeed}&clientSeed=${r.clientSeed}&nonce=${r.nonce}&dropColumn=${r.dropColumn}`} 
+                      target="_blank" 
+                      aria-label="Verify Round"
+                      className="inline-block px-3 py-1 text-xs font-bold rounded-md bg-white/5 border border-white/10 text-white/80 transition-all duration-200 ease-in-out hover:border-primary hover:text-white hover:shadow-[0_0_10px_rgba(139,92,246,0.6)] hover:bg-primary/10 active:scale-95 whitespace-nowrap"
+                    >
+                      Verify
                     </Link>
                   </td>
                 </tr>

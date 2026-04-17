@@ -272,7 +272,7 @@ const PlinkoBoard = forwardRef<PlinkoBoardRef, Props>(({
         } else {
           // Mapping segment boundaries
           const progress = elapsed / STEP_DURATION;
-          const stepIndex = Math.floor(progress);
+          const stepIndex = Math.max(0, Math.floor(progress));
           const t = progress - stepIndex;
 
           if (stepIndex > anim.lastTick && stepIndex > 0) {
