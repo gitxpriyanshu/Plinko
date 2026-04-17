@@ -1,11 +1,9 @@
-import crypto from 'crypto';
+import { sha256 } from './hash';
 
 /**
  * Returns lowercase hex SHA-256 of the input string
  */
-export function sha256(input: string): string {
-    return crypto.createHash('sha256').update(input).digest('hex');
-}
+export { sha256 };
 
 /**
  * Generates the commit hash from serverSeed and nonce

@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { makeCommit, makeCombinedSeed, sha256 } from '@/lib/crypto';
+import { makeCommit, makeCombinedSeed } from '@/lib/crypto';
 import { makeXorshift32, seedFromHex } from '@/lib/prng';
-import { generatePegMap, simulateDrop } from '@/lib/engine';
+import { generatePegMap, simulateDrop, getPegMapHash } from '@/lib/engine';
 
 export async function GET(request: Request) {
     try {
@@ -24,36 +24,39 @@ export async function GET(request: Request) {
 
         const commitHex = makeCommit(serverSeed, nonce);
         const combinedSeed = makeCombinedSeed(serverSeed, clientSeed, nonce);
-        const rand = makeXorshift32(seedFromHex(combinedSeed));
-        
         const rows = 12;
-        const pegMap = generatePegMap(rand, rows);
-        const pegMapHash = sha256(JSON.stringify(pegMap));
         
-        const { binIndex } = simulateDrop(pegMap, rand, dropColumn, rows);
+        // PRNG ISOLATION: Separate instances ensure simulation starts at index 0
+        const randSim = makeXorshift32(seedFromHex(combinedSeed));
+        const randMap = makeXorshift32(seedFromHex(combinedSeed));
 
-        let match: boolean | null = null;
-        
-        let round = null;
+        const { binIndex, pathString } = simulateDrop(randSim, dropColumn, rows);
+        const pegMap = generatePegMap(randMap, rows);
+        const pegMapHash = getPegMapHash(pegMap);
+
+        let isValid: boolean | null = null;
+        let checks = undefined;
+        let message = "No roundId provided, only computed values shown";
+
         if (roundId) {
-            round = await prisma.round.findUnique({ where: { id: roundId } });
-        } else {
-            // Fallback search attempting to locate the specific round cryptographically naturally
-            round = await prisma.round.findFirst({ 
-                where: { serverSeed, nonce } 
-            });
-        }
+            const round = await prisma.round.findUnique({ where: { id: roundId } });
+            if (round) {
+                const commitMatch = commitHex === round.commitHex;
+                const combinedSeedMatch = combinedSeed === round.combinedSeed;
+                const pegMapMatch = pegMapHash === round.pegMapHash;
+                const binMatch = binIndex === round.binIndex;
 
-        if (round) {
-            match = (
-                round.commitHex === commitHex &&
-                round.pegMapHash === pegMapHash &&
-                round.binIndex === binIndex && 
-                round.dropColumn === dropColumn
-            );
-        } else {
-            // Record completely missing or deleted
-            match = false;
+                isValid = commitMatch && combinedSeedMatch && pegMapMatch && binMatch;
+                checks = {
+                    commitMatch,
+                    combinedSeedMatch,
+                    pegMapMatch,
+                    binMatch
+                };
+                message = isValid ? "Match Verified" : "Mismatch Detected";
+            } else {
+                message = "Record Not Found in Database";
+            }
         }
 
         return NextResponse.json({
@@ -61,7 +64,10 @@ export async function GET(request: Request) {
             combinedSeed,
             pegMapHash,
             binIndex,
-            match
+            pathString,
+            isValid,
+            message,
+            checks
         });
     } catch (error: unknown) {
         console.error("Error verifying game round:", error);
