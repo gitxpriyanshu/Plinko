@@ -58,7 +58,9 @@ export function simulateDrop(
         // PEG INDEX COMPLIANCE: pegIndex = min(pos, r)
         // This calculates the horizontal index of the peg currently being hit.
         const pegIndex = Math.min(pos, r); 
-        
+        if (process.env.NODE_ENV === 'development') {
+           console.debug(`Simulation at row ${r}, hit peg ${pegIndex}`);
+        }        
         const rnd = rand();
         if (rnd < bias) {
             path.push('L');

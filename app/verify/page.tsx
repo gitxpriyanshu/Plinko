@@ -353,7 +353,7 @@ function VerifyForm() {
                         </div>
                     </div>
                 </div>
-            )}>
+            )}
          </div>
 
          <div className="w-full lg:w-[480px] flex flex-col gap-6">
